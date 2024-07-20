@@ -1,6 +1,6 @@
 package me.zowpy.command.util;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.ChatColor;
 
 /**
