@@ -1,4 +1,6 @@
 # CommandAPI
+**Credits: @Zowpy**
+
 _A light-weight yet powerful CommandAPI created by Zowpy and maintained by MTR_
 
 # Simple Commands Example
