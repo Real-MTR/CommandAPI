@@ -3,6 +3,7 @@ package me.zowpy.command.registrar;
 import lombok.RequiredArgsConstructor;
 import me.zowpy.command.CommandAPI;
 import me.zowpy.command.command.LyraCommand;
+import me.zowpy.command.util.ClassUtil;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,6 +26,14 @@ public class RegistrarCompleter {
 
     public RegistrarCompleter register(Object object) {
         return commandAPI.getCommandRegistrar().register(object);
+    }
+
+    public RegistrarCompleter register(String packageName) {
+        for (Class<?> clazz : ClassUtil.getClassesInPackage(commandAPI.getPlugin(), packageName)) {
+            register(clazz);
+        }
+
+        return this;
     }
 
     public CommandAPI endRegister() {
