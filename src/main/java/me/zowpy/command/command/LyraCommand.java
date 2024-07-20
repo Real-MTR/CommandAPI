@@ -2,12 +2,15 @@ package me.zowpy.command.command;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.zowpy.command.annotation.Command;
+import me.zowpy.command.annotation.TabCompleter;
 import me.zowpy.command.argument.Argument;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This Project is property of Zowpy © 2022
@@ -102,5 +105,67 @@ public class LyraCommand {
         }
 
         return this;
+    }
+
+    public boolean hasTabCompleter() {
+        Class<?> commandClass = method.getDeclaringClass();
+        boolean has = false;
+
+        for (Method method : commandClass.getDeclaredMethods()) {
+            if (!method.isAnnotationPresent(TabCompleter.class)) continue;
+
+            TabCompleter tabCompleter = method.getAnnotation(TabCompleter.class);
+
+            if(tabCompleter.parentCommand().equalsIgnoreCase(name) || Arrays.stream(aliases)
+                    .map(String::toLowerCase).collect(Collectors.toList()).contains(tabCompleter.parentCommand().toLowerCase())) {
+                has = true;
+                break;
+            }
+        }
+
+        return has;
+    }
+
+    public TabCompleter getTabCompleter() {
+        Class<?> commandClass = method.getDeclaringClass();
+        TabCompleter tabCompleter = null;
+
+        for (Method method : commandClass.getDeclaredMethods()) {
+            if (!method.isAnnotationPresent(TabCompleter.class)) continue;
+
+            tabCompleter = method.getAnnotation(TabCompleter.class);
+            break;
+        }
+
+        return tabCompleter;
+    }
+
+    public List<String> getTabCompleterValue() {
+        Class<?> commandClass = method.getDeclaringClass();
+        List<String> tabCompleterValues = new ArrayList<>();
+
+        for (Method method : commandClass.getDeclaredMethods()) {
+            if (!method.isAnnotationPresent(TabCompleter.class)) continue;
+            if (method.getReturnType() != List.class) continue;
+
+            try {
+                method.setAccessible(true);
+                Object returnValue = method.invoke(commandClass.newInstance());
+
+                if (returnValue instanceof List) {
+                    List<?> list = (List<?>) returnValue;
+
+                    for (Object obj : list) {
+                        if (obj instanceof String) {
+                            tabCompleterValues.add((String) obj);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return tabCompleterValues;
     }
 }

@@ -12,6 +12,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -130,5 +131,22 @@ public class CommandExecutor extends BukkitCommand {
         }
 
         return false;
+    }
+
+    @Override
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+        if(!lyraCommand.hasTabCompleter()) return super.tabComplete(sender, alias, args);
+
+        List<String> list = new ArrayList<>();
+
+        if(lyraCommand.getTabCompleter().async()) {
+            commandAPI.getExecutor().execute(() -> {
+                list.addAll(lyraCommand.getTabCompleterValue());
+            });
+        } else {
+            list.addAll(lyraCommand.getTabCompleterValue());
+        }
+
+        return list;
     }
 }

@@ -15,6 +15,7 @@ me\zowpy\command\util\TextUtil.class
 me\zowpy\command\provider\impl\bukkit\OfflinePlayerProvider.class
 me\zowpy\command\format\MessageFormat.class
 me\zowpy\command\argument\ArgumentHandler.class
+me\zowpy\command\annotation\TabCompleter.class
 me\zowpy\command\provider\impl\primitive\IntegerProvider.class
 me\zowpy\command\annotation\Optional.class
 me\zowpy\command\provider\exception\CommandExitException.class
