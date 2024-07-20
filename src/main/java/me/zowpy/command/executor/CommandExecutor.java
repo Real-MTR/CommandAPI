@@ -3,7 +3,9 @@ package me.zowpy.command.executor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.zowpy.command.CommandAPI;
+import me.zowpy.command.argument.Argument;
 import me.zowpy.command.command.LyraCommand;
+import me.zowpy.command.provider.Provider;
 import me.zowpy.command.provider.exception.CommandExceptionType;
 import me.zowpy.command.provider.exception.CommandExitException;
 import me.zowpy.command.util.C;
@@ -14,7 +16,9 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This Project is property of Zowpy © 2022
@@ -134,19 +138,49 @@ public class CommandExecutor extends BukkitCommand {
     }
 
     @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-        if(!lyraCommand.hasTabCompleter()) return super.tabComplete(sender, alias, args);
+    public List<String> tabComplete(CommandSender sender, String label, String[] args) throws IllegalArgumentException {
+        try {
+            List<LyraCommand> sortedNodes = commandAPI.getCommandContainer().getCommands().stream()
+                    .sorted(Comparator.comparingInt(node -> node.getMatchProbability(sender, label, args, true)))
+                    .collect(Collectors.toList());
 
-        List<String> list = new ArrayList<>();
+            LyraCommand node = sortedNodes.get(sortedNodes.size() - 1);
+            if(node.getMatchProbability(sender, label, args, true) >= 50) {
 
-        if(lyraCommand.getTabCompleter().async()) {
-            commandAPI.getExecutor().execute(() -> {
-                list.addAll(lyraCommand.getTabCompleterValue());
-            });
-        } else {
-            list.addAll(lyraCommand.getTabCompleterValue());
+                int extraLength = node.getName().split(" ").length - 1;
+                int arg = (args.length - extraLength) - 1;
+
+                if(arg < 0 || node.getArguments().size() < arg + 1)
+                    return new ArrayList<>();
+
+                Argument argumentNode = node.getArguments().get(arg);
+                return getTabComplete(argumentNode, sender, args[args.length - 1]);
+            }
+
+            List<String> names = new ArrayList<>(Arrays.asList(lyraCommand.getAliases()));
+            names.add(lyraCommand.getName());
+
+            return sortedNodes.stream()
+                    .filter(sortedNode -> sortedNode.getPermission().isEmpty() || sender.hasPermission(sortedNode.getPermission()))
+                    .map(sortedNode -> names.stream()
+                            .map(name -> name.split(" "))
+                            .filter(splitName -> splitName[0].equalsIgnoreCase(label))
+                            .filter(splitName -> splitName.length > args.length)
+                            .map(splitName -> splitName[args.length])
+                            .collect(Collectors.toList()))
+                    .flatMap(List::stream)
+                    .filter(name -> name.toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
+                    .collect(Collectors.toList());
+        } catch(Exception exception) {
+            exception.printStackTrace();
+            return new ArrayList<>();
         }
+    }
 
-        return list;
+    public List<String> getTabComplete(Argument node, CommandSender sender, String supplied) {
+        Provider<?> processor = commandAPI.getProviderContainer().getProviderByType(node.getType());
+        if(processor == null) return new ArrayList<>();
+
+        return processor.tabComplete(sender, supplied);
     }
 }

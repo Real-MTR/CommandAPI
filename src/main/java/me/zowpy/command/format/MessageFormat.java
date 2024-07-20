@@ -36,6 +36,6 @@ public class MessageFormat {
     }
 
     public String higherThanMaximum(Argument argument) {
-        return C.colorize("&cThe input was higher than the maximum value (" + argument.getMin() + ")");
+        return C.colorize("&cThe input was higher than the maximum value (" + argument.getMax() + ")");
     }
 }

@@ -2,15 +2,15 @@ package me.zowpy.command.command;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.zowpy.command.annotation.Command;
-import me.zowpy.command.annotation.TabCompleter;
 import me.zowpy.command.argument.Argument;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This Project is property of Zowpy © 2022
@@ -107,65 +107,63 @@ public class LyraCommand {
         return this;
     }
 
-    public boolean hasTabCompleter() {
-        Class<?> commandClass = method.getDeclaringClass();
-        boolean has = false;
+    public int getMatchProbability(CommandSender sender, String label, String[] args, boolean tabbed) {
+        AtomicInteger probability = new AtomicInteger(0);
+        List<String> names = new ArrayList<>(Arrays.asList(aliases));
+        names.add(name);
 
-        for (Method method : commandClass.getDeclaredMethods()) {
-            if (!method.isAnnotationPresent(TabCompleter.class)) continue;
+        names.forEach(name -> {
+            StringBuilder nameLabel = new StringBuilder(label).append(" ");
+            String[] splitName = name.split(" ");
+            int nameLength = splitName.length;
 
-            TabCompleter tabCompleter = method.getAnnotation(TabCompleter.class);
+            for(int i = 1; i < nameLength; i++)
+                if(args.length>= i) nameLabel.append(args[i - 1]).append(" ");
 
-            if(tabCompleter.parentCommand().equalsIgnoreCase(name) || Arrays.stream(aliases)
-                    .map(String::toLowerCase).collect(Collectors.toList()).contains(tabCompleter.parentCommand().toLowerCase())) {
-                has = true;
-                break;
-            }
-        }
+            if(name.equalsIgnoreCase(nameLabel.toString().trim())) {
+                int requiredParameters = (int) this.getArguments().stream()
+                        .filter(argument -> !argument.isOptional())
+                        .count();
 
-        return has;
-    }
+                int actualLength = args.length - (nameLength - 1);
 
-    public TabCompleter getTabCompleter() {
-        Class<?> commandClass = method.getDeclaringClass();
-        TabCompleter tabCompleter = null;
+                if(requiredParameters == actualLength || getArguments().size() == actualLength) {
+                    probability.addAndGet(125);
+                    return;
+                }
 
-        for (Method method : commandClass.getDeclaredMethods()) {
-            if (!method.isAnnotationPresent(TabCompleter.class)) continue;
-
-            tabCompleter = method.getAnnotation(TabCompleter.class);
-            break;
-        }
-
-        return tabCompleter;
-    }
-
-    public List<String> getTabCompleterValue() {
-        Class<?> commandClass = method.getDeclaringClass();
-        List<String> tabCompleterValues = new ArrayList<>();
-
-        for (Method method : commandClass.getDeclaredMethods()) {
-            if (!method.isAnnotationPresent(TabCompleter.class)) continue;
-            if (method.getReturnType() != List.class) continue;
-
-            try {
-                method.setAccessible(true);
-                Object returnValue = method.invoke(commandClass.newInstance());
-
-                if (returnValue instanceof List) {
-                    List<?> list = (List<?>) returnValue;
-
-                    for (Object obj : list) {
-                        if (obj instanceof String) {
-                            tabCompleterValues.add((String) obj);
-                        }
+                if(this.getArguments().size() > 0) {
+                    Argument lastArgument = this.getArguments().get(this.getArguments().size() - 1);
+                    if (lastArgument.isCombined() && actualLength > requiredParameters) {
+                        probability.addAndGet(125);
+                        return;
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
-        return tabCompleterValues;
+                if(!tabbed || splitName.length > 1 || getArguments().size() > 0)
+                    probability.addAndGet(50);
+
+                if(actualLength > requiredParameters)
+                    probability.addAndGet(15);
+
+                if(sender instanceof Player && consoleOnly)
+                    probability.addAndGet(-15);
+
+                if(!(sender instanceof Player) && playerOnly)
+                    probability.addAndGet(-15);
+
+                if(!permission.equals("") && !sender.hasPermission(permission))
+                    probability.addAndGet(-15);
+
+                return;
+            }
+
+            String[] labelSplit = nameLabel.toString().split(" ");
+            for(int i = 0; i < nameLength && i < labelSplit.length; i++)
+                if(splitName[i].equalsIgnoreCase(labelSplit[i]))
+                    probability.addAndGet(5);
+        });
+
+        return probability.get();
     }
 }

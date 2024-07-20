@@ -44,4 +44,12 @@ public class ProviderContainer {
         providers.put(Player.class, new PlayerProvider());
         providers.put(OfflinePlayer.class, new OfflinePlayerProvider());
     }
+
+    public Provider<?> getProviderByType(Class<?> clazz) {
+        return providers.get(clazz);
+    }
+
+    public void registerProvider(Class<?> clazz, Provider<?> provider) {
+        providers.put(clazz, provider);
+    }
 }
