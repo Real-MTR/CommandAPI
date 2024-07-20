@@ -1,7 +1,9 @@
 package me.zowpy.command.provider.impl.bukkit;
 
 import me.zowpy.command.provider.Provider;
+import me.zowpy.command.provider.exception.CommandExceptionType;
 import me.zowpy.command.provider.exception.CommandExitException;
+import me.zowpy.command.util.C;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 
@@ -36,7 +38,8 @@ public class GameModeProvider implements Provider<GameMode> {
             case "3":
                 return GameMode.SPECTATOR;
         }
-        return null;
+
+        throw new CommandExitException(C.colorize("&cInvalid Game Mode!"), CommandExceptionType.INVALID_ARGUMENT);
     }
 
     @Override
