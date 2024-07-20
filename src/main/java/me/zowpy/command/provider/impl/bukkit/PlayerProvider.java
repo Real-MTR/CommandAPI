@@ -1,8 +1,8 @@
 package me.zowpy.command.provider.impl.bukkit;
 
+import me.zowpy.command.provider.Provider;
 import me.zowpy.command.provider.exception.CommandExceptionType;
 import me.zowpy.command.provider.exception.CommandExitException;
-import me.zowpy.command.provider.Provider;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

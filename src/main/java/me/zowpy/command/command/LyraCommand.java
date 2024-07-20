@@ -3,7 +3,6 @@ package me.zowpy.command.command;
 import lombok.Getter;
 import lombok.Setter;
 import me.zowpy.command.argument.Argument;
-import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

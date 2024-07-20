@@ -1,13 +1,13 @@
 package me.zowpy.command.provider.container;
 
 import lombok.Getter;
+import me.zowpy.command.provider.Provider;
 import me.zowpy.command.provider.impl.bukkit.OfflinePlayerProvider;
 import me.zowpy.command.provider.impl.bukkit.PlayerProvider;
+import me.zowpy.command.provider.impl.primitive.BooleanProvider;
 import me.zowpy.command.provider.impl.primitive.DoubleProvider;
 import me.zowpy.command.provider.impl.primitive.FloatProvider;
 import me.zowpy.command.provider.impl.primitive.IntegerProvider;
-import me.zowpy.command.provider.Provider;
-import me.zowpy.command.provider.impl.primitive.BooleanProvider;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
