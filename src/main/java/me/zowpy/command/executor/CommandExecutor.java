@@ -91,7 +91,7 @@ public class CommandExecutor extends BukkitCommand {
         }
 
         if (lyraCommand1.getMethod() == null || lyraCommand1.getCommandClass() == null) {
-            throw new CommandExitException(commandAPI.getMessageFormat().noPermission(lyraCommand1), CommandExceptionType.UNREGISTERED);
+            throw new CommandExitException(commandAPI.getMessageFormat().registeredIncorrectly(lyraCommand1), CommandExceptionType.UNREGISTERED);
         }
 
         if (lyraCommand1.isAsync()) {
