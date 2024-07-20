@@ -12,7 +12,9 @@ C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\re
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\provider\impl\bukkit\OfflinePlayerProvider.java
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\provider\impl\primitive\FloatProvider.java
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\annotation\Optional.java
+C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\provider\impl\bukkit\ChatColorProvider.java
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\annotation\Range.java
+C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\provider\impl\bukkit\GameModeProvider.java
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\argument\ArgumentHandler.java
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\provider\container\ProviderContainer.java
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\registrar\RegistrarCompleter.java

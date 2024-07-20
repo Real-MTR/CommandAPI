@@ -1,5 +1,6 @@
 me\zowpy\command\annotation\Named.class
 me\zowpy\command\provider\container\ProviderContainer.class
+me\zowpy\command\provider\impl\bukkit\ChatColorProvider.class
 me\zowpy\command\executor\CommandExecutor.class
 me\zowpy\command\argument\Argument.class
 me\zowpy\command\provider\impl\bukkit\PlayerProvider.class
@@ -20,6 +21,7 @@ me\zowpy\command\annotation\Optional.class
 me\zowpy\command\provider\exception\CommandExitException.class
 me\zowpy\command\registrar\RegistrarCompleter.class
 me\zowpy\command\command\LyraCommand.class
+me\zowpy\command\provider\impl\bukkit\GameModeProvider.class
 me\zowpy\command\util\C.class
 me\zowpy\command\annotation\Command.class
 me\zowpy\command\registrar\CommandRegistrar.class

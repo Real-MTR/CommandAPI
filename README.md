@@ -1,4 +1,6 @@
 # CommandAPI
+[![](https://jitpack.io/v/Real-MTR/CommandAPI.svg)](https://jitpack.io/#Real-MTR/CommandAPI)
+****
 **Credits: @Zowpy**
 
 _A light-weight yet powerful CommandAPI created by Zowpy and maintained by MTR_
