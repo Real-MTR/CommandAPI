@@ -72,3 +72,36 @@ The paramater in the provide method is the argument given
 
 The message given in the CommandExitException's constructor is sent to the command sender when the exception is thrown
 
+# How to get the dependency?
+- Maven
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.github.Real-MTR</groupId>
+        <artifactId>CommandAPI</artifactId>
+        <version>VERSION</version>
+    </dependency>
+</dependencies>
+```
+- Gradle
+```groovy
+repositories {
+    mavenCentral()
+    
+    maven { 
+        url 'https://jitpack.io'
+    }
+}
+
+dependencies {
+    implementation 'com.github.Real-MTR:CommandAPI:VERSION'
+}
+```
