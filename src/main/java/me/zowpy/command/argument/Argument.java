@@ -17,7 +17,7 @@ import lombok.Setter;
 public class Argument {
 
     private boolean named, optional, combined, sender, flag, range;
-    private String name;
+    private String name = "arg";
 
     private int min, max;
 

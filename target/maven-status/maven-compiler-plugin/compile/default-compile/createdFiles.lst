@@ -12,6 +12,7 @@ me\zowpy\command\container\CommandContainer.class
 me\zowpy\command\provider\Provider.class
 me\zowpy\command\provider\impl\primitive\FloatProvider.class
 me\zowpy\command\util\TextUtil.class
+me\zowpy\command\provider\impl\bukkit\OfflinePlayerProvider.class
 me\zowpy\command\format\MessageFormat.class
 me\zowpy\command\argument\ArgumentHandler.class
 me\zowpy\command\provider\impl\primitive\IntegerProvider.class

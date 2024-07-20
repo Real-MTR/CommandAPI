@@ -9,6 +9,7 @@ C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\pr
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\annotation\Combined.java
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\provider\exception\CommandExitException.java
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\registrar\CommandRegistrar.java
+C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\provider\impl\bukkit\OfflinePlayerProvider.java
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\provider\impl\primitive\FloatProvider.java
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\annotation\Optional.java
 C:\Users\zions\Downloads\CommandAPI\CommandAPI\src\main\java\me\zowpy\command\annotation\Range.java
