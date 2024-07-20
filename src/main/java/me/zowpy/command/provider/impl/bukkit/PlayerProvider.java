@@ -1,5 +1,6 @@
 package me.zowpy.command.provider.impl.bukkit;
 
+import me.zowpy.command.provider.exception.CommandExceptionType;
 import me.zowpy.command.provider.exception.CommandExitException;
 import me.zowpy.command.provider.Provider;
 import org.bukkit.Bukkit;
@@ -22,7 +23,7 @@ public class PlayerProvider implements Provider<Player> {
         Player player = Bukkit.getPlayer(s);
 
         if (player == null) {
-            throw new CommandExitException(ChatColor.RED + "That player is offline!");
+            throw new CommandExitException(ChatColor.RED + "That player is offline!", CommandExceptionType.INVALID_ARGUMENT);
         }
 
         return player;

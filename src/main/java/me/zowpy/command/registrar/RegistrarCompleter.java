@@ -36,7 +36,7 @@ public class RegistrarCompleter {
         return this;
     }
 
-    public CommandAPI endRegister() {
+    public void endRegister() {
         List<LyraCommand> addCommands = new ArrayList<>();
         List<LyraCommand> removeCommands = new ArrayList<>();
 
@@ -71,7 +71,5 @@ public class RegistrarCompleter {
 
         commandAPI.getCommandContainer().getCommands().removeAll(removeCommands);
         commandAPI.getCommandContainer().getCommands().addAll(addCommands);
-
-        return commandAPI;
     }
 }

@@ -1,6 +1,8 @@
 package me.zowpy.command.format;
 
+import me.zowpy.command.argument.Argument;
 import me.zowpy.command.command.LyraCommand;
+import me.zowpy.command.util.C;
 
 /**
  * @project LyraCommand.java is a property of MTR
@@ -10,22 +12,30 @@ import me.zowpy.command.command.LyraCommand;
 public class MessageFormat {
 
     public String noPermission(LyraCommand command) {
-        return "&cYou do not have permission to execute the command (/" + command.getName() + ")";
+        return C.colorize("&cYou do not have permission to execute the command (/" + command.getName() + ")");
     }
 
     public String playersOnly(LyraCommand command) {
-        return "&cOnly players are allowed to execute this command!";
+        return C.colorize("&cOnly players are allowed to execute this command!");
     }
 
     public String consoleOnly(LyraCommand command) {
-        return "&cOnly consoles are allowed to execute this command!";
+        return C.colorize("&cOnly consoles are allowed to execute this command!");
     }
 
     public String registeredIncorrectly(LyraCommand command) {
-        return "&cError: This command was not registered correctly! Please contact an administrator.";
+        return C.colorize("&cError: This command was not registered correctly! Please contact an administrator.");
     }
 
     public String errorOccurred(LyraCommand command) {
-        return "&cAn error occurred while performing the command (/" + command.getName() + ")";
+        return C.colorize("&cAn error occurred while performing the command (/" + command.getName() + ")");
+    }
+
+    public String lowerThanMinimum(Argument argument) {
+        return C.colorize("&cThe input was lower than the minimum value (" + argument.getMin() + ")");
+    }
+
+    public String higherThanMaximum(Argument argument) {
+        return C.colorize("&cThe input was higher than the maximum value (" + argument.getMin() + ")");
     }
 }

@@ -56,10 +56,6 @@ public class CommandAPI {
         return registrarCompleter;
     }
 
-    public void endCommandRegister() {
-        registrarCompleter.endRegister();
-    }
-
     public CommandAPI bind(Class<?> clazz, Provider<?> provider) {
         providerContainer.getProviders().put(clazz, provider);
         return this;

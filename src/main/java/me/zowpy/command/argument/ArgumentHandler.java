@@ -5,7 +5,9 @@ import me.zowpy.command.CommandAPI;
 import me.zowpy.command.annotation.*;
 import me.zowpy.command.command.LyraCommand;
 import me.zowpy.command.provider.Provider;
+import me.zowpy.command.provider.exception.CommandExceptionType;
 import me.zowpy.command.provider.exception.CommandExitException;
+import me.zowpy.command.util.TextUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -38,10 +40,6 @@ public class ArgumentHandler {
 
         int i = 0;
         for (Parameter parameter : method.getParameters()) {
-            /*if (method.getParameters().length > i + 1 && parameter.isAnnotationPresent(Optional.class)) {
-                throw new IllegalArgumentException("The optional parameter has to be the last parameter.");
-            }*/
-
             if (method.getParameters().length > i + 1 && parameter.isAnnotationPresent(Combined.class)) {
                 throw new IllegalArgumentException("The optional parameter has to be the last parameter.");
             }
@@ -108,52 +106,14 @@ public class ArgumentHandler {
 
         // usage message
         if (!containsCombinedString && args.length < essentialArgs.size()) {
-            throw new CommandExitException(ChatColor.RED + "Usage: " + generateUsage(lyraCommand, requiredArgs));
+            throw new CommandExitException(ChatColor.translateAlternateColorCodes('&', generateUsage(lyraCommand, requiredArgs)), CommandExceptionType.USAGE);
         }
 
         if (args.length < essentialArgs.size()) {
-            throw new CommandExitException(ChatColor.RED + "Usage: " + generateUsage(lyraCommand, requiredArgs));
+            throw new CommandExitException(ChatColor.translateAlternateColorCodes('&', generateUsage(lyraCommand, requiredArgs)), CommandExceptionType.USAGE);
         }
 
         int indexed = 0;
-
-       /* boolean found = true;
-
-        if (args.length > 0) {
-            for (String alias : lyraCommand.getAliases()) {
-                String[] split = alias.split("\\s+");
-                int size = split.length;
-
-                int correct = 0;
-
-                for (int i = 0; i < size; i++) {
-                    int checkIndex = Math.max(0, i - 1);
-
-                    if (args[checkIndex].equalsIgnoreCase(split[i])) {
-                        correct++;
-
-                        System.out.println("Correct: " + args[checkIndex]);
-                    }
-                }
-
-                if (correct == size) {
-                    //indexed = size - 1;
-
-                    if (lyraCommand.getSubCommands().stream().anyMatch(command -> command.getArguments() == requiredArgs && command.getName().equalsIgnoreCase(alias) || Arrays.stream(command.getAliases()).anyMatch(s -> s.equalsIgnoreCase(alias)))) {
-                        found = true;
-                        System.out.println("it matched my nigga");
-                        break;
-                    }
-                }else {
-                    found = false;
-                }
-            }
-        }
-
-        if (!found) {
-            sender.sendMessage(ChatColor.RED + "Usage: " +  generateUsage(lyraCommand, requiredArgs));
-            return null;
-        } */
 
         for (Argument argument : requiredArgs) {
 
@@ -199,7 +159,7 @@ public class ArgumentHandler {
 
                 try {
                     obj = provide(argument, args[indexed]);
-                }catch (Exception exception) {
+                } catch (Exception exception) {
                     if (exception instanceof CommandExitException) {
                         throw exception;
                     }
@@ -215,15 +175,6 @@ public class ArgumentHandler {
 
                 continue;
             }
-            /*if ((parameters - indexed) >= 1 && argument.isOptional()) {
-                if ((args.length - indexed) >= 1) {
-                    toReturn.add(provide(argument, args[indexed]));
-                }else {
-                    toReturn.add(null);
-                }
-
-                continue;
-            } */
 
             // sender
             if (argument.isSender()) {
@@ -257,11 +208,11 @@ public class ArgumentHandler {
                 int i = (int) object;
 
                 if (argument.getMin() > i) {
-                    throw new CommandExitException(ChatColor.RED + "The input was lower than the minimum value (" + argument.getMin() + ")");
+                    throw new CommandExitException(commandAPI.getMessageFormat().lowerThanMinimum(argument), CommandExceptionType.LOWER_THAN_MINIMUM);
                 }
 
                 if (argument.getMax() < i) {
-                    throw new CommandExitException(ChatColor.RED + "The input was higher than the maximum value (" + argument.getMax() + ")");
+                    throw new CommandExitException(commandAPI.getMessageFormat().higherThanMaximum(argument), CommandExceptionType.HIGHER_THAN_MAXIMUM);
                 }
             }
 
@@ -273,36 +224,94 @@ public class ArgumentHandler {
     public String generateUsage(LyraCommand lyraCommand, List<Argument> arguments) {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("/").append(lyraCommand.getName()).append(" ");
+        if(lyraCommand.getSubCommands().isEmpty()) {
+            builder.append("&cUsage: ");
+            builder.append("/").append(lyraCommand.getName()).append(" ");
 
-        int indexed = 0;
+            int indexed = 0;
 
-        for (Argument argument : arguments) {
-            if (argument.isSender()) continue;
+            for (Argument argument : arguments) {
+                if (argument.isSender()) continue;
 
-            if (argument.isOptional() || argument.isFlag()) {
-                builder.append("[");
-            }else {
-                builder.append("<");
+                if (argument.isOptional() || argument.isFlag()) {
+                    builder.append("[");
+                } else {
+                    builder.append("<");
+                }
+
+                if (argument.isNamed()) {
+                    builder.append(argument.getName());
+                } else if (argument.isFlag()) {
+                    builder.append("-").append(argument.getFlagString());
+                } else {
+                    builder.append("arg").append(indexed);
+                }
+
+                if (argument.isOptional() || argument.isFlag()) {
+                    builder.append("]").append(" ");
+                } else {
+                    builder.append(">").append(" ");
+                }
+
+                indexed++;
             }
+        } else {
+            builder.append("&eShowing Help &b(/").append(lyraCommand.getName()).append(")").append(".LINEDOWN.");
 
-            if (argument.isNamed()) {
-                builder.append(argument.getName());
-            } else if (argument.isFlag()) {
-                builder.append("-").append(argument.getFlagString());
-            } else {
-                builder.append("arg").append(indexed);
+            int i = 0;
+            for (LyraCommand subCommand : lyraCommand.getSubCommands()) {
+                builder.append(".LINEDOWN. &7").append(TextUtil.UNICODE_ARROWS_RIGHT).append(" &e/")
+                        .append(subCommand.getName()).append(" &r");
+
+                int indexed = 0;
+                for (Argument argument : subCommand.getArguments()) {
+                    if (argument.isSender()) continue;
+
+                    if (argument.isOptional() || argument.isFlag()) {
+                        builder.append("[");
+                    } else {
+                        builder.append("<");
+                    }
+
+                    if (argument.isNamed()) {
+                        builder.append(argument.getName());
+                    } else if (argument.isFlag()) {
+                        builder.append("-").append(argument.getFlagString());
+                    } else {
+                        builder.append("arg").append(indexed);
+                    }
+
+                    if (argument.isOptional() || argument.isFlag()) {
+                        builder.append("]").append(" ");
+                    } else {
+                        builder.append(">").append(" ");
+                    }
+
+                    builder.append(".LINEDOWN.");
+                    indexed++;
+                }
+
+                i++;
+
+                if(i >= lyraCommand.getSubCommands().size()) {
+                    builder.append(".LINEDOWN.").append(".LINEDOWN.&eFound &b").append(lyraCommand.getSubCommands().size()).append(" &eavailable sub commands!");
+                }
             }
-
-            if (argument.isOptional() || argument.isFlag()) {
-                builder.append("]").append(" ");
-            } else {
-                builder.append(">").append(" ");
-            }
-
-            indexed++;
         }
 
-        return builder.toString();
+        String[] splits = builder.toString().split(".LINEDOWN.");
+        StringBuilder lastBuilder = new StringBuilder();
+
+        int i = 0;
+        for (String str : splits) {
+            lastBuilder.append(str);
+            i++;
+
+            if(splits.length > i) {
+                lastBuilder.append("\n");
+            }
+        }
+
+        return lastBuilder.toString();
     }
 }

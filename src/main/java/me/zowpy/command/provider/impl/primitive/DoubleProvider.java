@@ -1,5 +1,6 @@
 package me.zowpy.command.provider.impl.primitive;
 
+import me.zowpy.command.provider.exception.CommandExceptionType;
 import me.zowpy.command.provider.exception.CommandExitException;
 import me.zowpy.command.provider.Provider;
 import org.bukkit.ChatColor;
@@ -20,7 +21,7 @@ public class DoubleProvider implements Provider<Double> {
         try {
             return Double.parseDouble(s);
         }catch (Exception e) {
-            throw new CommandExitException(ChatColor.RED + "Not a valid double!");
+            throw new CommandExitException(ChatColor.RED + "Not a valid double!", CommandExceptionType.INVALID_ARGUMENT);
         }
     }
 }

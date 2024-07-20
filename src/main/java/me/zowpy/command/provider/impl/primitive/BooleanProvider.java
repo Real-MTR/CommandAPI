@@ -1,5 +1,6 @@
 package me.zowpy.command.provider.impl.primitive;
 
+import me.zowpy.command.provider.exception.CommandExceptionType;
 import me.zowpy.command.provider.exception.CommandExitException;
 import me.zowpy.command.provider.Provider;
 import org.bukkit.ChatColor;
@@ -21,7 +22,7 @@ public class BooleanProvider implements Provider<Boolean> {
         try {
             return Boolean.parseBoolean(s);
         }catch (Exception e) {
-            throw new CommandExitException(ChatColor.RED + "Not a valid boolean!");
+            throw new CommandExitException(ChatColor.RED + "Not a valid boolean!", CommandExceptionType.INVALID_ARGUMENT);
         }
     }
 }

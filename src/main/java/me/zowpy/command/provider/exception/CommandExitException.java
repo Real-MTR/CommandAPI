@@ -16,4 +16,5 @@ import lombok.RequiredArgsConstructor;
 public class CommandExitException extends Exception {
 
     private final String exitMessage;
+    private final CommandExceptionType exceptionType;
 }

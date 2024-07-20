@@ -1,8 +1,10 @@
 package me.zowpy.command.executor;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import me.zowpy.command.CommandAPI;
 import me.zowpy.command.command.LyraCommand;
+import me.zowpy.command.provider.exception.CommandExceptionType;
 import me.zowpy.command.provider.exception.CommandExitException;
 import me.zowpy.command.util.C;
 import org.bukkit.ChatColor;
@@ -59,6 +61,7 @@ public class CommandExecutor extends BukkitCommand {
         this.setAliases(Arrays.asList(command.getAliases()));
     }
 
+    @SneakyThrows
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         LyraCommand lyraCommand1 = lyraCommand;
@@ -83,15 +86,13 @@ public class CommandExecutor extends BukkitCommand {
 
             if (!lyraCommand1.getPermission().isEmpty()) {
                 if (!player.hasPermission(lyraCommand1.getPermission())) {
-                    C.sendMessage(sender, commandAPI.getMessageFormat().noPermission(lyraCommand1));
-                    return true;
+                    throw new CommandExitException(commandAPI.getMessageFormat().noPermission(lyraCommand1), CommandExceptionType.PERMISSION);
                 }
             }
         }
 
         if (lyraCommand1.getMethod() == null || lyraCommand1.getCommandClass() == null) {
-            sender.sendMessage(ChatColor.RED + "That command is not correctly registered!");
-            return true;
+            throw new CommandExitException(commandAPI.getMessageFormat().noPermission(lyraCommand1), CommandExceptionType.UNREGISTERED);
         }
 
         if (lyraCommand1.isAsync()) {
