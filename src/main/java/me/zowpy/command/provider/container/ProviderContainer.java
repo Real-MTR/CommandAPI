@@ -2,12 +2,16 @@ package me.zowpy.command.provider.container;
 
 import lombok.Getter;
 import me.zowpy.command.provider.Provider;
+import me.zowpy.command.provider.impl.bukkit.ChatColorProvider;
+import me.zowpy.command.provider.impl.bukkit.GameModeProvider;
 import me.zowpy.command.provider.impl.bukkit.OfflinePlayerProvider;
 import me.zowpy.command.provider.impl.bukkit.PlayerProvider;
 import me.zowpy.command.provider.impl.primitive.BooleanProvider;
 import me.zowpy.command.provider.impl.primitive.DoubleProvider;
 import me.zowpy.command.provider.impl.primitive.FloatProvider;
 import me.zowpy.command.provider.impl.primitive.IntegerProvider;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -43,6 +47,9 @@ public class ProviderContainer {
 
         providers.put(Player.class, new PlayerProvider());
         providers.put(OfflinePlayer.class, new OfflinePlayerProvider());
+
+        providers.put(ChatColor.class, new ChatColorProvider());
+        providers.put(GameMode.class, new GameModeProvider());
     }
 
     public Provider<?> getProviderByType(Class<?> clazz) {
