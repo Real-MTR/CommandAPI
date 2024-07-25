@@ -52,6 +52,10 @@ public class HelpMessageBuilder {
 
                 player.spigot().sendMessage(message);
             }
+        } else {
+            for (HelpComponent component : lines) {
+                sender.sendMessage(component.line);
+            }
         }
     }
 
