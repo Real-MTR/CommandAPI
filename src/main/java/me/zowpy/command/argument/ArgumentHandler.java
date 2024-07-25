@@ -106,11 +106,11 @@ public class ArgumentHandler {
 
         // usage message
         if (!containsCombinedString && args.length < essentialArgs.size()) {
-            throw new CommandExitException(ChatColor.translateAlternateColorCodes('&', generateUsage(lyraCommand, requiredArgs)), CommandExceptionType.USAGE);
+            throw new CommandExitException(ChatColor.translateAlternateColorCodes('&', generateUsage(sender, lyraCommand, requiredArgs, method.getDeclaringClass())), CommandExceptionType.USAGE);
         }
 
         if (args.length < essentialArgs.size()) {
-            throw new CommandExitException(ChatColor.translateAlternateColorCodes('&', generateUsage(lyraCommand, requiredArgs)), CommandExceptionType.USAGE);
+            throw new CommandExitException(ChatColor.translateAlternateColorCodes('&', generateUsage(sender, lyraCommand, requiredArgs, method.getDeclaringClass())), CommandExceptionType.USAGE);
         }
 
         int indexed = 0;
@@ -221,7 +221,7 @@ public class ArgumentHandler {
         return object;
     }
 
-    public String generateUsage(LyraCommand lyraCommand, List<Argument> arguments) {
+    public String generateUsage(CommandSender sender, LyraCommand lyraCommand, List<Argument> arguments, Class<?> clazz) throws CommandExitException {
         StringBuilder builder = new StringBuilder();
 
         if(lyraCommand.getSubCommands().isEmpty()) {
@@ -256,45 +256,79 @@ public class ArgumentHandler {
                 indexed++;
             }
         } else {
-            builder.append("&eShowing Help &b(/").append(lyraCommand.getName()).append(")").append(".LINEDOWN.");
+            // I know its a little weird but it works so idc
+            Help annotation = null;
+            Method triggeredMethod = null;
+            boolean triggered = false;
 
-            int i = 0;
-            for (LyraCommand subCommand : lyraCommand.getSubCommands()) {
-                builder.append(".LINEDOWN. &7").append(TextUtil.UNICODE_ARROWS_RIGHT).append(" &e/")
-                        .append(subCommand.getName()).append(" &r");
-
-                int indexed = 0;
-                for (Argument argument : subCommand.getArguments()) {
-                    if (argument.isSender()) continue;
-
-                    if (argument.isOptional() || argument.isFlag()) {
-                        builder.append("[");
-                    } else {
-                        builder.append("<");
-                    }
-
-                    if (argument.isNamed()) {
-                        builder.append(argument.getName());
-                    } else if (argument.isFlag()) {
-                        builder.append("-").append(argument.getFlagString());
-                    } else {
-                        builder.append("arg").append(indexed);
-                    }
-
-                    if (argument.isOptional() || argument.isFlag()) {
-                        builder.append("]").append(" ");
-                    } else {
-                        builder.append(">").append(" ");
-                    }
-
-                    builder.append(".LINEDOWN.");
-                    indexed++;
+            for (Method method : clazz.getMethods()) {
+                if(method.isAnnotationPresent(Help.class)) {
+                    triggered = true;
+                    triggeredMethod = method;
+                    annotation = method.getAnnotation(Help.class);
                 }
+            }
 
-                i++;
+            if(!triggered || triggeredMethod == null || annotation == null) {
+                builder.append("&eShowing Help &b(/").append(lyraCommand.getName()).append(")").append(".LINEDOWN.");
 
-                if(i >= lyraCommand.getSubCommands().size()) {
-                    builder.append(".LINEDOWN.").append(".LINEDOWN.&eFound &b").append(lyraCommand.getSubCommands().size()).append(" &eavailable sub commands!");
+                int i = 0;
+                for (LyraCommand subCommand : lyraCommand.getSubCommands()) {
+                    builder.append(".LINEDOWN. &7").append(TextUtil.UNICODE_ARROWS_RIGHT).append(" &e/")
+                            .append(subCommand.getName()).append(" &r");
+
+                    int indexed = 0;
+                    for (Argument argument : subCommand.getArguments()) {
+                        if (argument.isSender()) continue;
+
+                        if (argument.isOptional() || argument.isFlag()) {
+                            builder.append("[");
+                        } else {
+                            builder.append("<");
+                        }
+
+                        if (argument.isNamed()) {
+                            builder.append(argument.getName());
+                        } else if (argument.isFlag()) {
+                            builder.append("-").append(argument.getFlagString());
+                        } else {
+                            builder.append("arg").append(indexed);
+                        }
+
+                        if (argument.isOptional() || argument.isFlag()) {
+                            builder.append("]").append(" ");
+                        } else {
+                            builder.append(">").append(" ");
+                        }
+
+                        builder.append(".LINEDOWN.");
+                        indexed++;
+                    }
+
+                    i++;
+
+                    if (i >= lyraCommand.getSubCommands().size()) {
+                        builder.append(".LINEDOWN.").append(".LINEDOWN.&eFound &b").append(lyraCommand.getSubCommands().size()).append(" &eavailable sub commands!");
+                    }
+                }
+            } else {
+                try {
+                    if(annotation.consolesOnly()) {
+                        if(!(sender instanceof ConsoleCommandSender)) throw new CommandExitException(commandAPI.getMessageFormat().consoleOnly(lyraCommand), CommandExceptionType.CONSOLE_ONLY);
+                        triggeredMethod.invoke((ConsoleCommandSender) sender);
+                        return "";
+                    }
+
+                    if(annotation.playersOnly()) {
+                        if(!(sender instanceof Player)) throw new CommandExitException(commandAPI.getMessageFormat().playersOnly(lyraCommand), CommandExceptionType.PLAYERS_ONLY);
+                        triggeredMethod.invoke((Player) sender);
+                        return "";
+                    }
+
+                    triggeredMethod.invoke(sender);
+                    return "";
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

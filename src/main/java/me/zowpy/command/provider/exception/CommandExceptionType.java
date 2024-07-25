@@ -12,5 +12,6 @@ public enum CommandExceptionType {
     HIGHER_THAN_MAXIMUM,
     PERMISSION,
     UNREGISTERED,
-
+    CONSOLE_ONLY,
+    PLAYERS_ONLY;
 }
