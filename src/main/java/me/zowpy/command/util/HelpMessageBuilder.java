@@ -8,12 +8,17 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 public class HelpMessageBuilder {
 
     private final List<HelpComponent> lines;
+
+    public HelpMessageBuilder() {
+        this.lines = new ArrayList<>();
+    }
 
     public HelpMessageBuilder addLine(String line, ClickEvent clickEvent, HoverEvent hoverEvent) {
         lines.add(new HelpComponent(line, true, true, clickEvent, hoverEvent));
